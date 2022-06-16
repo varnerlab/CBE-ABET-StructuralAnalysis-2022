@@ -38,7 +38,7 @@ The PICA matrix is the product of the transpose of the mapping matrix $M^{T}$ wi
 $$PICA \equiv M^{T}M$$
 
 The PICA matrix is a $\mathcal{P}\times\mathcal{P}$ array whose diagonal entries describe the number of courses that used a particular PI.
-On the other hand, the off-diagonal elements describe the number of shared courses between the PI $i$ and $j$, where $i\neq{j}$.
+On the other hand, the off-diagonal elements describe the number of shared courses between the  $i$ and $j$, where $i\neq{j}$.
 
 """
 
@@ -66,8 +66,8 @@ end
 # ╔═╡ 2198273b-b388-4291-bfc1-b263ea952b85
 df
 
-# ╔═╡ 9c0d888e-56b6-41c0-9d25-7d855fa5161a
-# compute the course connectivity array (CCA) -
+# ╔═╡ 41de88b3-c1d4-494b-aa53-cff07e4b58c1
+# compute the course connectivity array -
 CCA = M*transpose(M)
 
 # ╔═╡ 98830429-e731-4915-9a3e-3f1640d810c4
@@ -422,7 +422,7 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╠═2dd9b648-636b-4e56-989a-00c32f95eea9
 # ╠═f3263a91-6989-4fb8-9092-bf048fe0096e
 # ╠═2198273b-b388-4291-bfc1-b263ea952b85
-# ╠═9c0d888e-56b6-41c0-9d25-7d855fa5161a
+# ╠═41de88b3-c1d4-494b-aa53-cff07e4b58c1
 # ╠═98830429-e731-4915-9a3e-3f1640d810c4
 # ╟─a45da81a-edb4-11ec-2f66-2b11954e62aa
 # ╟─00000000-0000-0000-0000-000000000001

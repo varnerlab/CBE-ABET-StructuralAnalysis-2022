@@ -118,12 +118,7 @@ S*transpose(S)
 
 # ╔═╡ 76e6c96c-fca0-4e6c-8f78-d859f922f265
 md"""
-##### Modeling the relationship between courses and program educational outcomes
-"""
-
-# ╔═╡ b84b8efe-6c28-4224-afb1-257c5a91edf1
-md"""
-##### Implementation
+##### Modeling the relationship between student outcomes and program educational outcomes (PEO)
 """
 
 # ╔═╡ 78c39051-c596-4c30-9b75-fa388157bc39
@@ -142,11 +137,15 @@ begin
 	nothing 
 end
 
-# ╔═╡ 2198273b-b388-4291-bfc1-b263ea952b85
-df_so_pi
-
 # ╔═╡ 4e0f0d59-4e91-47ff-8b74-ec544c246e9c
-P
+T = P*S
+
+# ╔═╡ 8383bef6-8bcc-492c-8a6f-0eef1280b8e7
+begin	
+	R = sum(T,dims=2)
+	Z = sum(R)
+	Rₛ = (1/Z)*R
+end
 
 # ╔═╡ a45da81a-edb4-11ec-2f66-2b11954e62aa
 html"""
@@ -501,10 +500,9 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╠═70a3f9d0-6be4-42f4-89b6-daf45a3b0202
 # ╠═8b0642d8-5cff-440f-973e-5c28395a620b
 # ╟─76e6c96c-fca0-4e6c-8f78-d859f922f265
-# ╟─b84b8efe-6c28-4224-afb1-257c5a91edf1
 # ╠═78c39051-c596-4c30-9b75-fa388157bc39
-# ╠═2198273b-b388-4291-bfc1-b263ea952b85
 # ╠═4e0f0d59-4e91-47ff-8b74-ec544c246e9c
+# ╠═8383bef6-8bcc-492c-8a6f-0eef1280b8e7
 # ╟─a45da81a-edb4-11ec-2f66-2b11954e62aa
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

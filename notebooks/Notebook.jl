@@ -6,8 +6,8 @@ using InteractiveUtils
 
 # ╔═╡ 2dd9b648-636b-4e56-989a-00c32f95eea9
 begin
-	
-	# load the required Julia packages -
+
+	# Julia setup: load the required Julia packages -
 	using DataFrames
 	using CSV
 	using LinearAlgebra
@@ -48,16 +48,6 @@ gives the $\mathcal{P}\times\mathcal{P}$ performance indicator connectivity arra
 
 """
 
-# ╔═╡ 10f76d44-1473-40bd-ad94-97c3ba0b5668
-md"""
-##### Modeling the relationship between program educational objectives and student outcomes
-"""
-
-# ╔═╡ b84b8efe-6c28-4224-afb1-257c5a91edf1
-md"""
-##### Implementation
-"""
-
 # ╔═╡ f3263a91-6989-4fb8-9092-bf048fe0096e
 begin
 
@@ -73,6 +63,68 @@ begin
 	# show -
 	nothing 
 end
+
+# ╔═╡ 41de88b3-c1d4-494b-aa53-cff07e4b58c1
+# compute the course connectivity array -
+CCA = M*transpose(M)
+
+# ╔═╡ 98830429-e731-4915-9a3e-3f1640d810c4
+# compute the PI connectivity array (PICA) -
+PICA = transpose(M)*M
+
+# ╔═╡ 10f76d44-1473-40bd-ad94-97c3ba0b5668
+md"""
+##### Modeling the relationship between courses and student outcomes
+The mapping matrix $M$ relates $\mathcal{C}$ courses to $\mathcal{P}$ performance indicators. However, to explore the relationship between classes and program educational outcomes (PEOs), we need to map the $\mathcal{P}$ performance indicators to the $\mathcal{S}$ student outcomes. The College of Engineering Educational Assessment Committee (COEEAC) already developed these relationships, which we encode in the $\mathcal{S}\times{P}$ matrix $L$: 
+
+$$l_{ij} = 
+\begin{cases}
+	\alpha & \text{if student outcome i is connected with performance indicator j} \\
+	0 & \text{if student outcome i is connected with performance indicator j}
+\end{cases}$$
+
+where $\alpha$ denotes the fraction of outcome $i$ represented by performance indicator $j$. We assume that each performance indicator contributes equally to each student outcome. Thus, if the set of performance indicators belonging to a particular student outcome has $n$ elements, then $\alpha = 1/n$,
+
+The $\mathcal{S}\times\mathcal{P}$ student outcomes matrix $S$ is given by:
+
+$$S = LM^{T}$$
+
+Connectivity analysis of the matrix $S$ gives us insights into share outcomes:
+* The $SS^{T}$ array with dimension $\mathcal{S}\times\mathcal{S}$ holds information about the number of outcomes per course (diagonal) and the shared outcomes between class $i$ and $j$, where $i\neq{j}$.
+* The $S^{T}S$ array with dimension $\mathcal{C}\times\mathcal{C}$  holds information about the number of courses per outcome (diagonal) and classes shared between outcomes $i$ and $j$, where $i\neq{j}$
+"""
+
+# ╔═╡ 7df2a516-9954-43bf-b5af-0d0c7c940270
+begin
+
+	# path to binary PEO to SO array -
+	path_to_outcomes_PI_data_file = joinpath(pwd(),"data","Outcomes-PI-BinaryMapping-Array.csv")
+
+	# load the data as a DataFrame -
+	df_so_pi = CSV.read(path_to_outcomes_PI_data_file, DataFrame)
+
+	# generate the PEO matrix P -
+	L = Matrix(df_so_pi[!,2:end])
+	
+	# show -
+	nothing 
+end
+
+# ╔═╡ 70a3f9d0-6be4-42f4-89b6-daf45a3b0202
+S = L*transpose(M)
+
+# ╔═╡ 8b0642d8-5cff-440f-973e-5c28395a620b
+S*transpose(S)
+
+# ╔═╡ 76e6c96c-fca0-4e6c-8f78-d859f922f265
+md"""
+##### Modeling the relationship between courses and program educational outcomes
+"""
+
+# ╔═╡ b84b8efe-6c28-4224-afb1-257c5a91edf1
+md"""
+##### Implementation
+"""
 
 # ╔═╡ 78c39051-c596-4c30-9b75-fa388157bc39
 begin
@@ -90,35 +142,11 @@ begin
 	nothing 
 end
 
-# ╔═╡ 7df2a516-9954-43bf-b5af-0d0c7c940270
-begin
-
-	# path to binary PEO to SO array -
-	path_to_outcomes_PI_data_file = joinpath(pwd(),"data","Outcomes-PI-BinaryMapping-Array.csv")
-
-	# load the data as a DataFrame -
-	df_so_pi = CSV.read(path_to_outcomes_PI_data_file, DataFrame)
-
-	# generate the PEO matrix P -
-	S = Matrix(df_so_pi[!,2:end])
-	
-	# show -
-	nothing 
-end
-
 # ╔═╡ 2198273b-b388-4291-bfc1-b263ea952b85
 df_so_pi
 
 # ╔═╡ 4e0f0d59-4e91-47ff-8b74-ec544c246e9c
 P
-
-# ╔═╡ 41de88b3-c1d4-494b-aa53-cff07e4b58c1
-# compute the course connectivity array -
-CCA = M*transpose(M)
-
-# ╔═╡ 98830429-e731-4915-9a3e-3f1640d810c4
-# compute the PI connectivity array (PICA) -
-PICA = transpose(M)*M
 
 # ╔═╡ a45da81a-edb4-11ec-2f66-2b11954e62aa
 html"""
@@ -463,17 +491,20 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 
 # ╔═╡ Cell order:
 # ╟─41d68deb-3426-4586-a085-7e6fe19be8b4
-# ╟─1fd0757b-537b-4e61-bebf-d7da7f00d2ed
-# ╟─10f76d44-1473-40bd-ad94-97c3ba0b5668
-# ╟─b84b8efe-6c28-4224-afb1-257c5a91edf1
 # ╠═2dd9b648-636b-4e56-989a-00c32f95eea9
+# ╟─1fd0757b-537b-4e61-bebf-d7da7f00d2ed
 # ╠═f3263a91-6989-4fb8-9092-bf048fe0096e
-# ╠═78c39051-c596-4c30-9b75-fa388157bc39
-# ╠═7df2a516-9954-43bf-b5af-0d0c7c940270
-# ╠═2198273b-b388-4291-bfc1-b263ea952b85
-# ╠═4e0f0d59-4e91-47ff-8b74-ec544c246e9c
 # ╠═41de88b3-c1d4-494b-aa53-cff07e4b58c1
 # ╠═98830429-e731-4915-9a3e-3f1640d810c4
+# ╟─10f76d44-1473-40bd-ad94-97c3ba0b5668
+# ╠═7df2a516-9954-43bf-b5af-0d0c7c940270
+# ╠═70a3f9d0-6be4-42f4-89b6-daf45a3b0202
+# ╠═8b0642d8-5cff-440f-973e-5c28395a620b
+# ╟─76e6c96c-fca0-4e6c-8f78-d859f922f265
+# ╟─b84b8efe-6c28-4224-afb1-257c5a91edf1
+# ╠═78c39051-c596-4c30-9b75-fa388157bc39
+# ╠═2198273b-b388-4291-bfc1-b263ea952b85
+# ╠═4e0f0d59-4e91-47ff-8b74-ec544c246e9c
 # ╟─a45da81a-edb4-11ec-2f66-2b11954e62aa
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

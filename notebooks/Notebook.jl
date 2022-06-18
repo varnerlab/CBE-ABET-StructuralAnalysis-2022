@@ -22,35 +22,46 @@ Jeffrey D Varner, Professor, Robert Frederick Smith School of Chemical and Biomo
 
 # ╔═╡ 1fd0757b-537b-4e61-bebf-d7da7f00d2ed
 md"""
-#### Theory
-As part of the 2022-ABET self-study, we developed a course mapping matrix $M$ that related the courses in the core curriculum of the Smith School to the seven ABET student outcomes and particularly the N performance indicators developed by the College of Engineering Educational Assessment Committee (COEEAC). The mapping matrix $M$ is a $\mathcal{C}\times\mathcal{P}$ binary matrix (only has entries of $0$ and $1$), where $\mathcal{C}$ denotes the number of courses that were assessed using $\mathcal{P}$ performance indicators. Thus, the rows of $M$ correspond to the CBE courses assessed in this cycle $\mathcal{C} = 12$, while the columns correspond to COEEAC performance indicators $\mathcal{P} = 17$.
+##### Modeling the relationship between courses and performance indicators
+The course mapping matrix $M$ related the courses taught in the core curriculum of the Smith School to the performance indicators (PIs) developed by the College of Engineering Educational Assessment Committee (COEEAC). The mapping matrix $M$ was constructed using the instructor-generated self-assessments for each CBE course. The course mapping matrix $M$ is a $\mathcal{C}\times\mathcal{P}$ binary matrix, where $\mathcal{C}$ denotes the number of courses. In contrast, $\mathcal{P} $ denotes the number of performance indicators used for assessment. The $(i,j)$ value of $M$, denoted by $m_{ij}$ can take on two values, $0$ or $1$:
 
-##### Course connectivity array (CCA)
-The CCA matrix is product of $M$ with its transpose (denoted by $\star^{T}$):
+$$m_{ij} = 
+\begin{cases}
+	1 & \text{if course i assessed using performance indicator j} \\
+	0 & \text{if course i not assessed using performance indicator j}
+\end{cases}$$
+
+Thus, the rows of the matrix $M$ correspond to the CBE courses assessed in this cycle $\mathcal{C} = 12$, while the columns correspond to COEEAC performance indicators $\mathcal{P} = 17$. Operations on the matrix $M$ can give structural information about the CBE program and how it is assessed. 
+
+__Course connectivity array (CCA)__: The product of the matrix $M$ with its transpose (denoted by $\star^{T}$) gives the $\mathcal{C}\times\mathcal{C}$ course connectivity array (CCA):
 
 $$CCA \equiv MM^{T}$$
 
-The CCA matrix is a $\mathcal{C}\times\mathcal{C}$ array whose diagonal entries describe the number of PIs used for the assessment of that course. In contrast, off-diagonal elements describe the number of shared PIs between the classes $i$ and $j$, where $i\neq{j}$.
+The diagonal entries of $CCA$ describe the number of PIs used to assess that course. In contrast, off-diagonal elements of $CCA$ describe the number of shared PIs between classes $i$ and $j$, where $i\neq{j}$. Thus, $CCA$ helps determine the assessment coverage for a particular course and the assessment relationship between classes.
 
-##### Performance Indicator connectivity array (PICA)
-The PICA matrix is the product of the transpose of the mapping matrix $M^{T}$ with its itself:
+
+__Performance Indicator connectivity array (PICA)__: The product of the transpose of the mapping matrix $M^{T}$ with its itself:
 
 $$PICA \equiv M^{T}M$$
 
-The PICA matrix is a $\mathcal{P}\times\mathcal{P}$ array whose diagonal entries describe the number of courses that used a particular PI.
-On the other hand, the off-diagonal elements describe the number of shared courses between the  $i$ and $j$, where $i\neq{j}$.
+gives the $\mathcal{P}\times\mathcal{P}$ performance indicator connectivity array (PICA). The diagonal entries of $PICA$ describe the number of courses that used a particular PI. On the other hand, the off-diagonal elements of $PICA$ represent the number of shared classes between performance indicator $i$ and $j$, where $i\neq{j}$.
 
+"""
+
+# ╔═╡ 10f76d44-1473-40bd-ad94-97c3ba0b5668
+md"""
+##### Modeling the relationship between program educational objectives and student outcomes
 """
 
 # ╔═╡ b84b8efe-6c28-4224-afb1-257c5a91edf1
 md"""
-#### Implementation
+##### Implementation
 """
 
 # ╔═╡ f3263a91-6989-4fb8-9092-bf048fe0096e
 begin
 
-	# path to the binary matrix -
+	# path to the binary M matrix -
 	path_to_data_file = joinpath(pwd(),"data","Course-Binary-Array-Connectivity-Array.csv")
 	
 	# load the data as a DataFrame -
@@ -63,8 +74,43 @@ begin
 	nothing 
 end
 
+# ╔═╡ 78c39051-c596-4c30-9b75-fa388157bc39
+begin
+
+	# path to binary PEO to SO array -
+	path_to_peo_data_file = joinpath(pwd(),"data","BinaryMapping-PEOs-to-SO.csv")
+
+	# load the data as a DataFrame -
+	df_peo = CSV.read(path_to_peo_data_file, DataFrame)
+
+	# generate the PEO matrix P -
+	P = Matrix(df_peo[!,2:end])
+	
+	# show -
+	nothing 
+end
+
+# ╔═╡ 7df2a516-9954-43bf-b5af-0d0c7c940270
+begin
+
+	# path to binary PEO to SO array -
+	path_to_outcomes_PI_data_file = joinpath(pwd(),"data","Outcomes-PI-BinaryMapping-Array.csv")
+
+	# load the data as a DataFrame -
+	df_so_pi = CSV.read(path_to_outcomes_PI_data_file, DataFrame)
+
+	# generate the PEO matrix P -
+	S = Matrix(df_so_pi[!,2:end])
+	
+	# show -
+	nothing 
+end
+
 # ╔═╡ 2198273b-b388-4291-bfc1-b263ea952b85
-df
+df_so_pi
+
+# ╔═╡ 4e0f0d59-4e91-47ff-8b74-ec544c246e9c
+P
 
 # ╔═╡ 41de88b3-c1d4-494b-aa53-cff07e4b58c1
 # compute the course connectivity array -
@@ -418,10 +464,14 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╔═╡ Cell order:
 # ╟─41d68deb-3426-4586-a085-7e6fe19be8b4
 # ╟─1fd0757b-537b-4e61-bebf-d7da7f00d2ed
+# ╟─10f76d44-1473-40bd-ad94-97c3ba0b5668
 # ╟─b84b8efe-6c28-4224-afb1-257c5a91edf1
 # ╠═2dd9b648-636b-4e56-989a-00c32f95eea9
 # ╠═f3263a91-6989-4fb8-9092-bf048fe0096e
+# ╠═78c39051-c596-4c30-9b75-fa388157bc39
+# ╠═7df2a516-9954-43bf-b5af-0d0c7c940270
 # ╠═2198273b-b388-4291-bfc1-b263ea952b85
+# ╠═4e0f0d59-4e91-47ff-8b74-ec544c246e9c
 # ╠═41de88b3-c1d4-494b-aa53-cff07e4b58c1
 # ╠═98830429-e731-4915-9a3e-3f1640d810c4
 # ╟─a45da81a-edb4-11ec-2f66-2b11954e62aa

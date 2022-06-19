@@ -13,6 +13,8 @@ begin
 	using LinearAlgebra
 	using Statistics
 	using PlutoUI
+	using PrettyTables
+	using StatsBase
 end
 
 # ╔═╡ b74a5af6-eaf9-4e90-a3ff-4e2d33b4efef
@@ -39,10 +41,10 @@ The mapping matrix $M$ relates $\mathcal{C}$ courses to $\mathcal{P}$ performanc
 $$l_{ij} = 
 \begin{cases}
 	\alpha & \text{if student outcome i is connected with performance indicator j} \\
-	0 & \text{if student outcome i is connected with performance indicator j}
+	0 & \text{if student outcome i is not connected with performance indicator j}
 \end{cases}$$
 
-where $\alpha$ denotes the fraction of outcome $i$ represented by performance indicator $j$; for simplicity we assume that each performance indicator contributes equally to each student outcome. Thus, if the set of performance indicators belonging to a particular student outcome has $n$ elements, then $\alpha = 1/n$,
+where $\alpha$ denotes the fraction of outcome $i$ represented by performance indicator $j$; for simplicity, we assume that each performance indicator contributes equally to each student outcome. Thus, if the set of performance indicators belonging to a particular student outcome has $n$ elements, then $\alpha = 1/n$,
 
 The $\mathcal{S}\times\mathcal{C}$ student outcomes matrix $S$ is given by:
 
@@ -71,24 +73,145 @@ begin
 	nothing 
 end
 
+# ╔═╡ d506c21b-0a90-480f-8c19-3adfc6b1b06d
+df_course_pi
+
 # ╔═╡ 1db0c5d1-ddb4-4ba0-8858-2774fbac9cbb
 S
 
 # ╔═╡ c9d6a1eb-80e5-4a83-a55f-927be3f7fa61
 md"""
 ### Observable Assesment Gaps
-The student outcomes array $S$ is a $\mathcal{S}\times\mathcal{C}$ matrix whose $(i,j)$-th entry describes the fraction of assessments used by each class. For example, $s_{1,1} = 1.0$, which says that ENGRI-1120 (index 1 of the list of courses) fully assesses outcome 1 (the ENGRI-1120 self-assessment used all the performance indicators associated for student outcome-1 to measure student achievement). However, $s_{3,1} = 0.33$ says that ENGRI-1120 did not fully assess student achievement with respect to student outcome 3 (only one of three possible performance indicators was evaluated); thus, is an __observable assessment gap__ of $g_{3,1} = 0.66$, where $g_{ij}$ denotes the $(i,j)$-th element of the observable assessment gap matrix $G$.
+The student outcomes array $S$ is a $\mathcal{S}\times\mathcal{C}$ matrix whose $(i,j)$-th entry describes the fraction of assessments used by each class. For example, $s_{1,1} = 1.0$, which says that ENGRI-1120 (index 1 of the list of courses) fully assesses outcome 1 (the ENGRI-1120 self-assessment used all the performance indicators associated for student outcome-1 to measure student achievement). However, $s_{3,1} = 0.33$ says that ENGRI-1120 did not fully assess student achievement with respect to student outcome 3 (only one of three possible performance indicators was evaluated); thus, is an __observable assessment gap__ of $g_{3,1} = 0.67$, where $g_{ij}$ denotes the $(i,j)$-th element of the observable assessment gap matrix $G$.
 
 To compute the observable assessment gap matrix $G$, we find the indices of all non-zero values of the student outcomes array $S$ and then subtract these values from 1; this difference gives the fraction of possible assessment tools available for a student outcome. 
 """
 
 # ╔═╡ 448950d1-d8d1-4a52-8437-0d408d2cb922
+begin
 
+	# get size of S -
+	(𝒮,𝒞) = size(S)
+	G = Array{Float64,2}(undef, 𝒮, 𝒞)
+	fill!(G, 0.0) # initialize all the entries to zero -
+	
+	# compute the gap -
+	for i ∈ 1:𝒮
+		for j ∈ 1:𝒞
+			G[i,j] = 1 - S[i,j]
+		end
+	end
+end
+
+# ╔═╡ 0dd3376d-fea4-47cf-9f92-ee2f24a48c62
+with_terminal() do
+
+	# build a pretty table that holds the assessment gap for each course -
+	data_table = Array{Any,2}(undef, 𝒞+1, (𝒮 + 1))
+
+	# put the names of the courses in the first col -
+	for i ∈ 1:𝒞
+		data_table[i,1] = df_course_pi[i, :Courses]
+	end
+	data_table[end,1] = "gap"
+
+	# compute the T -
+	T = (1/𝒞).*sum(G, dims=2)
+
+	# build the header_row -
+	header_row = ["Course", "O₁", "O₂", "O₃", "O₄", "O₅", "O₆", "O₇"]
+
+	# next, copy in the G entries -
+	for o ∈ 1:𝒮
+		for c ∈ 1:𝒞
+			data_table[c,(o+1)] = G[o,c]
+		end
+	end
+
+	for o ∈ 1:𝒮
+		data_table[end,o+1] = T[o]
+	end
+	
+
+	
+	pretty_table(data_table; header=header_row)
+end
 
 # ╔═╡ d4e684a8-6a06-43f9-a140-e4c52ca94e80
 md"""
-### Modeling the relationship between courses and program educational objectives 
+### Modeling the relationship between courses and program educational objectives
+The central question we seek to answer is whether our courses and their associated assessment regime support the current program educational objectives (PEOs) for the Smith School. Toward this question, we will construct and analyze the entries of the program matrix $P$, a $\mathcal{O}\times\mathcal{C}$ matric whose $(i,j)$-th entry describes how course $j$ contributes to outcome $i$. We compute the program matrix $P$ as:
+
+$$P = TS$$
+
+where $T$ is a $\mathcal{O}\times{S}$ mapping matrix which relates the program educational objectives (rows) to the ABET student outcomes (cols). The $(i,j)$-th element of $T$, denoted by $t_{ij}$ is defined as:
+
+$$t_{ij} = 
+\begin{cases}
+	\beta & \text{if PEO i is connected with student outcome j} \\
+	0 & \text{if PEO i is not connected with student outcome j}
+\end{cases}$$
+
+where $\beta$ denotes the fraction of program educational objective $i$ represented by student outcome $j$; for simplicity, we assume that each student outcome contributes equally to a program educational objective. Thus, if the set of student outcomes belonging to a particular program educational objective has $n$ elements, then $\beta = 1/n$,
 """
+
+# ╔═╡ 53edec60-0309-49d2-a2d3-5e8e86d33ed3
+begin
+
+	# path to binary PEO to SO array -
+	path_to_peo_data_file = joinpath(pwd(),"data","BinaryMapping-PEOs-to-SO.csv")
+
+	# load the data as a DataFrame -
+	df_peo = CSV.read(path_to_peo_data_file, DataFrame)
+
+	# generate the PEO matrix P -
+	T = Matrix(df_peo[!,2:end])
+	
+	# show -
+	nothing 
+end
+
+# ╔═╡ 155efa43-6b62-42cc-b47a-6f6664dbb56a
+P = T*S
+
+# ╔═╡ e1359301-f08e-405e-a086-2795e1366ace
+with_terminal() do
+
+	# what is the size of the P matrix -
+	(𝒪,𝒞) = size(P)
+	
+	# compute scaled score -
+	R = sum(P,dims=2)
+	Z = sum(R)
+	Rₛ = (1/Z).*R
+
+	# sort index -
+	sort_index = sortperm(Rₛ[:]; rev=true)
+
+	sorted_Rₛ = Rₛ[sort_index]
+	
+	# initialize -
+	data_table = Array{Any,2}(undef, 𝒪, 𝒞 + 3)
+	obj_string_array = ["(a)", "(b)", "(c)", "(d)", "(e)", "(f)"]
+
+	# add scaled values -
+	for o ∈ 1:𝒪
+		
+		# setup first two cols -
+		data_table[o,1] = obj_string_array[sort_index[o]]
+		data_table[o,2] = sorted_Rₛ[o]*(1/sorted_Rₛ[1])
+		data_table[o,3] = o
+
+		rank_array = ordinalrank(P[sort_index[o],:]; rev=true)
+		for r ∈ 1:𝒞
+			data_table[o,r+3] = rank_array[r]
+		end
+	end
+
+	header_row = ["PEO", "Score", "Rank", "ENGRI-1120", "ENGRG-2190", "CHEME-2880", "CHEME-3230", "CHEME-3130", 
+		"CHEME-3240", "CHEME-3320", "CHEME-3720", "CHEME-3900", "CHEME-4320", "CHEME-4610", "CHEME-4620"]
+	pretty_table(data_table; header=header_row)
+end
 
 # ╔═╡ 7044bfb3-08d5-49d6-8017-63a156a8b5d8
 TableOfContents(title="📚 Table of Contents", indent=true, depth=5, aside=true)
@@ -160,12 +283,16 @@ CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 CSV = "~0.10.4"
 DataFrames = "~1.3.4"
 PlutoUI = "~0.7.39"
+PrettyTables = "~1.3.1"
+StatsBase = "~0.33.16"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -195,6 +322,18 @@ deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers
 git-tree-sha1 = "873fb188a4b9d76549b81465b1f75c82aaf59238"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 version = "0.10.4"
+
+[[deps.ChainRulesCore]]
+deps = ["Compat", "LinearAlgebra", "SparseArrays"]
+git-tree-sha1 = "9489214b993cd42d17f44c36e359bf6a7c919abf"
+uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+version = "1.15.0"
+
+[[deps.ChangesOfVariables]]
+deps = ["ChainRulesCore", "LinearAlgebra", "Test"]
+git-tree-sha1 = "1e315e3f4b0b7ce40feded39c73049692126cf53"
+uuid = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
+version = "0.1.3"
 
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
@@ -257,6 +396,12 @@ uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 deps = ["Random", "Serialization", "Sockets"]
 uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
+[[deps.DocStringExtensions]]
+deps = ["LibGit2"]
+git-tree-sha1 = "b19534d1895d702889b219c382a6e18010797f0b"
+uuid = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+version = "0.8.6"
+
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
@@ -314,10 +459,21 @@ version = "1.1.2"
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
+[[deps.InverseFunctions]]
+deps = ["Test"]
+git-tree-sha1 = "b3364212fb5d870f724876ffcd34dd8ec6d98918"
+uuid = "3587e190-3f89-42d0-90ee-14403ec27112"
+version = "0.1.7"
+
 [[deps.InvertedIndices]]
 git-tree-sha1 = "bee5f1ef5bf65df56bdd2e40447590b272a5471f"
 uuid = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
 version = "1.1.0"
+
+[[deps.IrrationalConstants]]
+git-tree-sha1 = "7fd44fd4ff43fc60815f8e764c0f352b83c49151"
+uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
+version = "0.1.1"
 
 [[deps.IteratorInterfaceExtensions]]
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
@@ -352,6 +508,12 @@ uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
+[[deps.LogExpFunctions]]
+deps = ["ChainRulesCore", "ChangesOfVariables", "DocStringExtensions", "InverseFunctions", "IrrationalConstants", "LinearAlgebra"]
+git-tree-sha1 = "09e4b894ce6a976c354a69041a04748180d43637"
+uuid = "2ab3a3ac-af41-5b50-aa03-7779005ae688"
+version = "0.3.15"
 
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
@@ -466,6 +628,18 @@ uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
+[[deps.StatsAPI]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "2c11d7290036fe7aac9038ff312d3b3a2a5bf89e"
+uuid = "82ae8749-77ed-4fe6-ae5f-f523153014b0"
+version = "1.4.0"
+
+[[deps.StatsBase]]
+deps = ["DataAPI", "DataStructures", "LinearAlgebra", "LogExpFunctions", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics", "StatsAPI"]
+git-tree-sha1 = "8977b17906b0a1cc74ab2e3a05faa16cf08a8291"
+uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+version = "0.33.16"
+
 [[deps.TOML]]
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
@@ -536,12 +710,17 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╠═bece9725-e7d5-411d-b5a2-957e8166d074
 # ╟─618126fe-2448-42e6-8adf-0eecf3638e93
 # ╠═2ad2609b-947f-4a76-beec-059cf037f8df
+# ╠═d506c21b-0a90-480f-8c19-3adfc6b1b06d
 # ╠═1db0c5d1-ddb4-4ba0-8858-2774fbac9cbb
 # ╟─c9d6a1eb-80e5-4a83-a55f-927be3f7fa61
 # ╠═448950d1-d8d1-4a52-8437-0d408d2cb922
-# ╠═d4e684a8-6a06-43f9-a140-e4c52ca94e80
-# ╠═7044bfb3-08d5-49d6-8017-63a156a8b5d8
+# ╟─0dd3376d-fea4-47cf-9f92-ee2f24a48c62
+# ╟─d4e684a8-6a06-43f9-a140-e4c52ca94e80
+# ╠═53edec60-0309-49d2-a2d3-5e8e86d33ed3
+# ╠═155efa43-6b62-42cc-b47a-6f6664dbb56a
+# ╠═e1359301-f08e-405e-a086-2795e1366ace
+# ╟─7044bfb3-08d5-49d6-8017-63a156a8b5d8
 # ╟─fe434898-efef-11ec-25c2-eb441ffd2bb6
-# ╠═b52fe0d7-3742-468d-93ae-5052d72a5039
+# ╟─b52fe0d7-3742-468d-93ae-5052d72a5039
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

@@ -25,3 +25,4 @@ Manifest.toml
 .DS_Store
 .DS_Store
 notebooks/data/.DS_Store
+notebooks/.DS_Store

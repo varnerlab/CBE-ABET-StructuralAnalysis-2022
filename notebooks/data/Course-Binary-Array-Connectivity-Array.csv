@@ -2,12 +2,12 @@ Courses,Term,Type,Faculty ,1a,1b,2a,2b,2c,3a,3b,3c,4a,4b,5a,5b,6a,6b,6c,7a,7b
 ENGRI-1120,F,Selected Elective,Varner,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0
 ENGRG-2190,F,Required,Duncan,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0
 CHEME-2880,F,Selected Elective,Paszek,0,0,0,0,1,0,0,1,0,0,0,0,0,1,1,0,0
+CHEME-3230,S,Required,Homozi,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 CHEME-3130,F,Required,Abbott,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0
 CHEME-3240,F,Required,Stroock,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-CHEME-4320,F,Required,Yu,0,0,0,0,0,1,1,1,0,0,1,1,1,1,1,0,0
-CHEME-4610,F,Elective,Woltornist,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
-CHEME-3230,S,Required,Homozi,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 CHEME-3320,S,Required,Joo,1,1,1,1,1,1,1,0,1,1,0,0,0,0,0,0,0
 CHEME-3720,S,Required,Engstrom,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
 CHEME-3900,S,Required,Duncan/Li,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0
+CHEME-4320,F,Required,Yu,0,0,0,0,0,1,1,1,0,0,1,1,1,1,1,0,0
+CHEME-4610,F,Elective,Woltornist,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 CHEME-4620,S,Required,Woltornist,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0

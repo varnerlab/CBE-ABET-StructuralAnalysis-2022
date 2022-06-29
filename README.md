@@ -27,4 +27,6 @@ To run the notebooks live, you need [Julia](https://julialang.org) and the [Plut
 ### Static Analysis Notebooks
 You can also access static versions of the analysis notebooks.
 
+* [Connectivity of Courses and Performance Indicators](https://htmlview.glitch.me/?https://github.com/varnerlab/CBE-ABET-StructuralAnalysis-2022/blob/main/html/CCA-PICA-Notebook.jl.html): Notebook computes the Course Connectivity Array (CCA) and the Performance Indicator Connectivity Array (PICA) for the CBE curriculum in the Spring 2021, Fall 2021, and Spring 2022 terms.
+
 * [Gaps and Programs Educational Objectives](https://htmlview.glitch.me/?https://github.com/varnerlab/CBE-ABET-StructuralAnalysis-2022/blob/main/html/PEOs-Notebook.jl.html): Notebook explores gaps in the assessment of the CBE curriculum for the Spring 2021, Fall 2021, and Spring 2022 terms. 

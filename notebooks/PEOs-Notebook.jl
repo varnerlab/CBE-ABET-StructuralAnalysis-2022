@@ -73,9 +73,6 @@ begin
 	nothing 
 end
 
-# ╔═╡ d506c21b-0a90-480f-8c19-3adfc6b1b06d
-df_course_pi
-
 # ╔═╡ 1db0c5d1-ddb4-4ba0-8858-2774fbac9cbb
 S
 
@@ -710,7 +707,6 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╠═bece9725-e7d5-411d-b5a2-957e8166d074
 # ╟─618126fe-2448-42e6-8adf-0eecf3638e93
 # ╠═2ad2609b-947f-4a76-beec-059cf037f8df
-# ╠═d506c21b-0a90-480f-8c19-3adfc6b1b06d
 # ╠═1db0c5d1-ddb4-4ba0-8858-2774fbac9cbb
 # ╟─c9d6a1eb-80e5-4a83-a55f-927be3f7fa61
 # ╠═448950d1-d8d1-4a52-8437-0d408d2cb922

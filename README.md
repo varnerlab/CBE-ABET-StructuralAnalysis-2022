@@ -2,7 +2,8 @@
 This repository holds codes to perform structural analysis of the Chemical and Biomolecular Engineering curriculum of the Smith School. 
 
 ### Installing Julia and Pluto
-[Julia](https://julialang.org) is open source, free and runs on all major operating systems and platforms. To install 
+To run the notebooks live, you need [Julia](https://julialang.org) and the [Pluto](https://github.com/fonsp/Pluto.jl) notebook package. 
+[Julia](https://julialang.org) and [Pluto](https://github.com/fonsp/Pluto.jl) are open source, free and run on all major operating systems and platforms. To install 
 [Julia](https://julialang.org) and [Pluto](https://github.com/fonsp/Pluto.jl) please check out the tutorial for 
 [MIT 18.S191/6.S083/22.S092 course from Fall 2020](https://computationalthinking.mit.edu/Fall20/installation/).
 
@@ -22,3 +23,8 @@ This repository holds codes to perform structural analysis of the Chemical and B
     julia -E "using Pluto; Pluto.run()"
     ```
 1. From Pluto, open one of the `.jl` notebook files located in the `CBE-ABET-StructuralAnalysis-2022/notebooks/` directory, and then enjoy!
+
+### Static Analysis Notebooks
+You can also access static versions of the analysis notebooks.
+
+*[Gaps and Programs Educational Objectives](https://htmlview.glitch.me/?https://github.com/varnerlab/CBE-ABET-StructuralAnalysis-2022/blob/main/html/PEOs-Notebook.jl.html)
